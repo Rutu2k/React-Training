@@ -1,21 +1,60 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { UserListType } from "./type";
+import { useContext, useReducer } from "react";
+import { Context } from "../App";
+
 import UsersComponent from "./UsersComponent";
 
 const UsersContainer: React.FC = () => {
-  const [userList, setUserList] = useState<Array<UserListType>>([]);
+  const theme = useContext(Context);
 
-  useEffect(() => {
-    axios
-      .get("https://reqres.in/api/users")
-      .then((response) => setUserList(response?.data?.data))
-      .catch((error) => console.log(error));
-  }, []);
+  console.log(theme);
 
-  console.log(userList);
+  const userData = [
+    {
+      id: 1,
+      name: "kunal",
+      age: 22,
+      admin: true,
+    },
+    {
+      id: 2,
+      name: "rounak",
+      age: 23,
+      admin: false,
+    },
+    {
+      id: 3,
+      name: "utkarsh",
+      age: 22,
+      admin: false,
+    },
+  ];
 
-  return <UsersComponent userList={userList} />;
+  const reducerMethod = (users: any, action: any) => {
+    switch (action.type) {
+      case "deleteUser": {
+        return users.filter((user: any) => user.id !== action.id);
+      }
+      default: {
+        // Handle error here
+      }
+    }
+  };
+
+  const [users, dispatch] = useReducer(reducerMethod, userData);
+
+  const handleDeleteUser = (userId: any) => {
+    dispatch({
+      type: "deleteUser",
+      id: userId,
+    });
+  };
+  return (
+    <UsersComponent
+      userList={users}
+      handleDeleteUser={handleDeleteUser}
+      theme={theme}
+    />
+  );
 };
 
 export default UsersContainer;
