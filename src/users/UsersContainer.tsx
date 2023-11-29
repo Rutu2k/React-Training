@@ -1,10 +1,16 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { UserListType } from "./type";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store";
+import { increment } from "../userSlice";
+
 import UsersComponent from "./UsersComponent";
 
 const UsersContainer: React.FC = () => {
-  const [userList, setUserList] = useState<Array<UserListType>>([]);
+  const [userList, setUserList] = useState<Array<any>>([]);
+  const counter: any = useSelector((state: RootState) => state.user.counter);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
@@ -13,9 +19,19 @@ const UsersContainer: React.FC = () => {
       .catch((error) => console.log(error));
   }, []);
 
-  console.log(userList);
+  const handleOnButtonClick = () => {
+    dispatch(increment());
+  };
 
-  return <UsersComponent userList={userList} />;
+  console.log("here");
+
+  return (
+    <UsersComponent
+      userList={userList}
+      counter={counter}
+      handleOnButtonClick={handleOnButtonClick}
+    />
+  );
 };
 
 export default UsersContainer;
