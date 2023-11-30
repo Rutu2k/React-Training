@@ -1,21 +1,17 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { UserListType } from "./type";
+import { useQuery } from "react-query";
+import { Spinner } from "reactstrap";
 import UsersComponent from "./UsersComponent";
 
 const UsersContainer: React.FC = () => {
-  const [userList, setUserList] = useState<Array<UserListType>>([]);
+  const fetchUsers = async () => {
+    const response = await axios.get("https://reqres.in/api/users");
+    return response?.data?.data;
+  };
 
-  useEffect(() => {
-    axios
-      .get("https://reqres.in/api/users")
-      .then((response) => setUserList(response?.data?.data))
-      .catch((error) => console.log(error));
-  }, []);
+  const { data, isLoading } = useQuery("userList", fetchUsers);
 
-  console.log(userList);
-
-  return <UsersComponent userList={userList} />;
+  return !isLoading ? <UsersComponent userList={data} /> : <Spinner />;
 };
 
 export default UsersContainer;
